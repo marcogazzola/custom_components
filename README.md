@@ -44,6 +44,23 @@ sensor:
         - FIRMWARE
 ```
 
+### Configure [custom_updater](https://github.com/custom-components/custom_updater) component
+After [installing the component](https://github.com/custom-components/custom_updater/wiki/Installation), configure it as follows:
+
+```yaml
+custom_updater:
+  track:
+    - components
+  component_urls:
+# Dev build (unstable)
+#    - https://raw.githubusercontent.com/marcogazzola/custom_components/dev/custom_components.json
+# Released build
+    - https://raw.githubusercontent.com/marcogazzola/custom_components/master/custom_components.json
+
+
+```
+
+
 # Changelog
 Complete changelog [here](https://github.com/marcogazzola/custom_components/blob/master/CHANGELOG.md).
 
