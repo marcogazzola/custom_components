@@ -21,7 +21,7 @@ from homeassistant.util import Throttle
 
 REQUIREMENTS = ['shellypython>=0.0.3']
 
-__version__ = '0.0.1'
+__version__ = '0.0.2b0'
 
 _LOGGER = logging.getLogger(__name__)
 
