@@ -1,0 +1,9 @@
+{
+    "shelly_cloud": {
+        "version": "0.0.1",
+        "local_location": "/custom_components/shelly_cloud/sensor.py",
+        "remote_location": "https://raw.githubusercontent.com/marcogazzola/custom_components/master/shelly_cloud/sensor.py",                            
+        "visit_repo": "https://github.com/marcogazzola/custom_components",
+        "changelog": "https://github.com/marcogazzola/custom_components/releases/latest"
+    }
+}
