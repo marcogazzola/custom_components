@@ -26,14 +26,12 @@ Once there you’ll need to **update your config** to include the following unde
 ***Mandatory config:***
 ```yaml
 sensor:
-
   - platform: shelly_cloud
     ip_address: !secret shelly_ip_address
 ```
 ***Optional config:***
 ```yaml
 sensor:
-
   - platform: shelly_cloud
     ip_address: !secret shelly_ip_address
     name: shelly
@@ -56,7 +54,6 @@ custom_updater:
 #    - https://raw.githubusercontent.com/marcogazzola/custom_components/dev/custom_components.json
 # Released build
     - https://raw.githubusercontent.com/marcogazzola/custom_components/master/custom_components.json
-
 
 ```
 
