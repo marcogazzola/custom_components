@@ -26,22 +26,20 @@ Once there you’ll need to **update your config** to include the following unde
 ***Mandatory config:***
 ```yaml
 sensor:
-  accounts:
-    - platform: shelly_cloud
-      ip_address: !secret shelly_ip_address
+  - platform: shelly_cloud
+    ip_address: !secret shelly_ip_address
 ```
 ***Optional config:***
 ```yaml
 sensor:
-  accounts:
-    - platform: shelly_cloud
-      ip_address: !secret shelly_ip_address
-      name: shelly
-      monitored_conditions:
-        - MQTT
-        - CLOUD
-        - WIFI
-        - FIRMWARE
+  - platform: shelly_cloud
+    ip_address: !secret shelly_ip_address
+    name: shelly
+    monitored_conditions:
+      - MQTT
+      - CLOUD
+      - WIFI
+      - FIRMWARE
 ```
 
 ### Configure [custom_updater](https://github.com/custom-components/custom_updater) component
@@ -56,8 +54,6 @@ custom_updater:
 #    - https://raw.githubusercontent.com/marcogazzola/custom_components/dev/custom_components.json
 # Released build
     - https://raw.githubusercontent.com/marcogazzola/custom_components/master/custom_components.json
-
-
 ```
 
 
