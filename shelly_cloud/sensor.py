@@ -22,7 +22,7 @@ from .const import *
 from . import VERSION
 from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
-REQUIREMENTS = ['shellypython>=0.0.4b0']
+REQUIREMENTS = ['shellypython>=0.0.4b1']
 
 _LOGGER = logging.getLogger(__name__)
 
