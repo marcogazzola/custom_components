@@ -1,9 +1,13 @@
 {
     "shelly_cloud": {
-        "version": "0.0.1",
-        "local_location": "/custom_components/shelly_cloud/sensor.py",
-        "remote_location": "https://raw.githubusercontent.com/marcogazzola/custom_components/master/shelly_cloud/sensor.py",                            
+        "version": "0.0.2",
+        "local_location": "/custom_components/shelly_cloud/__init__.py",
+        "remote_location": "https://raw.githubusercontent.com/marcogazzola/custom_components/master/shelly_cloud/__init__.py",
         "visit_repo": "https://github.com/marcogazzola/custom_components",
-        "changelog": "https://github.com/marcogazzola/custom_components/releases/latest"
+        "changelog": "https://github.com/marcogazzola/custom_components/blob/master/CHANGELOG.md",
+        "resources": [
+            "https://raw.githubusercontent.com/marcogazzola/custom_components/master/shelly_cloud/const.py",
+            "https://raw.githubusercontent.com/marcogazzola/custom_components/master/shelly_cloud/sensor.py"
+        ]
     }
 }

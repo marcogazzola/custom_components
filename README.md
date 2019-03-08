@@ -8,9 +8,9 @@ Allows for control the states of Shelly Cloud products as home assistant sensors
 
 * Sensor System
 * Sensor Wifi
-* Sensor Firmware
-* Sensor Cloud
 * Sensor Mqtt
+* Sensor Cloud
+* Sensor Firmware
 
 # Configuration
 ### Download python files
@@ -18,30 +18,62 @@ Reproduce the directory structure of the [master branch](https://github.com/marc
 ```
 custom_components
   shelly_cloud
+    __init__.py
+    const.py
     sensor.py
 ```
 ### Configure HA
 Once there you’ll need to **update your config** to include the following under the **sensor domain**:
 
-***Mandatory config:***
 ```yaml
 sensor:
-  accounts:
-    - platform: shelly_cloud
-      ip_address: !secret shelly_ip_address
+  - platform: shelly_cloud
+    ip_address: !secret shelly_ip_address
 ```
-***Optional config:***
+
+***Configuration Variables***
+```
+ip_address
+  (string)(Required)The IP address or hostname of the Shelly you want to track.
+
+scan_interval
+  (time)(Optional)Minimum time interval between updates. Supported formats: scan_interval: 'HH:MM:SS', scan_interval: 'HH:MM' and Time period dictionary (see example below).
+  Default value: 2 minutes
+
+monitored_conditions
+  (list)(Optional)Sensors to display in the frontend.
+  Default value: All keys
+  
+  system
+    will be created sensor that will expose system informations like mac address, working mode, model name, etc..
+
+  wifi
+    will be created sensor that will expose wifi informations like wifi quality (%), ip address, SSID
+
+  mqtt
+    will be created sensor that will expose mqtt status
+
+  cloud
+    will be created sensor that will expose cloud status
+
+  firmware
+    will be created sensor that will expose firmware inofrmations like current and new firmware versione
+```
+
+***Example***
 ```yaml
 sensor:
-  accounts:
-    - platform: shelly_cloud
-      ip_address: !secret shelly_ip_address
-      name: shelly
-      monitored_conditions:
-        - MQTT
-        - CLOUD
-        - WIFI
-        - FIRMWARE
+  - platform: shelly_cloud
+    ip_address: !secret shelly_ip_address
+    name: shelly
+    scan_interval:
+      - minutes: 2
+    monitored_conditions:
+      - SYSTEM
+      - WIFI
+      - MQTT
+      - CLOUD
+      - FIRMWARE
 ```
 
 ### Configure [custom_updater](https://github.com/custom-components/custom_updater) component
@@ -56,8 +88,6 @@ custom_updater:
 #    - https://raw.githubusercontent.com/marcogazzola/custom_components/dev/custom_components.json
 # Released build
     - https://raw.githubusercontent.com/marcogazzola/custom_components/master/custom_components.json
-
-
 ```
 
 
