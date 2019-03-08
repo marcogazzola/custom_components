@@ -1,1 +1,1 @@
-VERSION = '0.0.2b1'
+from .const import VERSION

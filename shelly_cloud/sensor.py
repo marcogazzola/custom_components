@@ -13,13 +13,13 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     CONF_NAME, CONF_IP_ADDRESS,
     CONF_USERNAME, CONF_PASSWORD,
-    CONF_MONITORED_CONDITIONS
+    CONF_MONITORED_CONDITIONS, CONF_SCAN_INTERVAL
     )
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import (Entity, generate_entity_id)
 from homeassistant.util import Throttle
 from .const import *
-from . import VERSION
+from .const import VERSION
 from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
 REQUIREMENTS = ['shellypython>=0.0.4b1']
@@ -32,6 +32,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_USERNAME): cv.string,
     vol.Optional(CONF_PASSWORD): cv.string,
+    vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
+            cv.time_period,
     vol.Optional(CONF_MONITORED_CONDITIONS, default=SENSOR_TYPES):
         vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
     })
@@ -44,13 +46,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     name = config.get(CONF_NAME)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
-    monitored_condition = config[CONF_MONITORED_CONDITIONS]
-
+    monitored_condition = config.get(CONF_MONITORED_CONDITIONS)
+    scan_interval = config.get(CONF_SCAN_INTERVAL)
     shelly_data = ShellyData(
-        ip_address, username, password, SCAN_INTERVAL_SECONDS, add_entities)
+        ip_address, username, password, scan_interval, add_entities)
     shelly_data.update()
-
-    monitored_condition.append(CONST_SENSOR_SYSTEM)
 
     if shelly_data is not None and shelly_data.data is not None:
         if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
@@ -225,9 +225,7 @@ class ShellyData:
         self.data = None
 
         # Apply throttling to methods using configured interval
-        from datetime import timedelta
-        timedelta_interval = timedelta(seconds=scan_interval)
-        self.update = Throttle(timedelta_interval)(self._update)
+        self.update = Throttle(scan_interval)(self._update)
 
     def _update(self):
         """Get the latest data from Shelly Api."""
