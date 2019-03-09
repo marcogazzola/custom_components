@@ -1,6 +1,6 @@
 {
     "shelly_cloud": {
-        "version": "0.0.2b2",
+        "version": "0.0.4b0",
         "local_location": "/custom_components/shelly_cloud/__init__.py",
         "remote_location": "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/__init__.py",
         "visit_repo": "https://github.com/marcogazzola/custom_components",

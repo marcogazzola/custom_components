@@ -19,10 +19,8 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import (Entity, generate_entity_id)
 from homeassistant.util import Throttle
 from .const import *
-from .const import VERSION
-from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
-REQUIREMENTS = ['shellypython>=0.0.4b1']
+REQUIREMENTS = ['shellypython>=0.0.4']
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,6 +39,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Shelly sensor."""
+
+    from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
     ip_address = config.get(CONF_IP_ADDRESS)
     name = config.get(CONF_NAME)
