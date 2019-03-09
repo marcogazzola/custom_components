@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 
 CONF_DOMAIN = 'domain'
 
