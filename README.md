@@ -67,7 +67,7 @@ sensor:
     ip_address: !secret shelly_ip_address
     name: shelly
     scan_interval:
-      - minutes: 2
+      minutes: 2
     monitored_conditions:
       - SYSTEM
       - WIFI
