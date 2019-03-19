@@ -1,13 +1,23 @@
+"""
+Shelly Cloud constant.
+
+For more details about this platform, please refer to the documentation at
+https://github.com/marcogazzola/custom_components/blob/master/README.md
+"""
+
 from datetime import timedelta
 
-VERSION = '0.0.4b0'
+VERSION = '0.0.4b1'
 
 CONF_DOMAIN = 'domain'
+DOMAIN = "shelly_cloud"
 
 DEFAULT_NAME = 'Shelly'
 
 SCAN_INTERVAL = timedelta(minutes=2)
-
+CONF_DEVICES = 'devices'
+MANAGED_COMPONENTS = ['sensor']
+# ['switch', 'sensor']
 CONST_CONNECTED = 'Connected'
 CONST_DISCONNECTED = 'Disconnected'
 CONST_ENABLED = 'Enabled'
@@ -23,8 +33,9 @@ CONST_SENSOR_RELAY = 'RELAY'
 CONST_SENSOR_ROLLER = 'ROLLER'
 
 SENSOR_TYPES = [
-    CONST_SENSOR_SYSTEM, CONST_SENSOR_MQTT, CONST_SENSOR_CLOUD, CONST_SENSOR_WIFI,
-    CONST_SENSOR_FIRMWARE#, CONST_SENSOR_RELAY, CONST_SENSOR_ROLLER
+    CONST_SENSOR_SYSTEM, CONST_SENSOR_MQTT, CONST_SENSOR_CLOUD,
+    CONST_SENSOR_WIFI, CONST_SENSOR_FIRMWARE
+    # , CONST_SENSOR_RELAY, CONST_SENSOR_ROLLER
     ]
 
 SENSOR_ICONS = {
