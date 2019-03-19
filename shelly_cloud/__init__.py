@@ -20,7 +20,7 @@ from homeassistant.const import (
 
 from .const import (
     SCAN_INTERVAL, CONF_DEVICES, DOMAIN,
-    DEFAULT_NAME, SENSOR_TYPES, MANAGED_COMPONENTS)
+    DEFAULT_NAME, SENSOR_TYPES, MANAGED_COMPONENTS, VERSION)
 
 from .shelly_data import ShellyData
 
