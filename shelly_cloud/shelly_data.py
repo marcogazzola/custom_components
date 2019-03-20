@@ -16,7 +16,7 @@ class ShellyData:
 
     def __init__(
             self, ip_address, username, password, name,
-            scan_interval, monitored_conditions):
+            scan_interval, monitored_conditions, hass = None):
         """Initialize the data object."""
         self.ip_address = ip_address
         self.username = username
@@ -24,7 +24,7 @@ class ShellyData:
         self.monitored_conditions = monitored_conditions
         self.scan_interval = scan_interval
         self.name = name
-
+        self.hass = hass
         self.data = None
 
         # Apply throttling to methods using configured interval
@@ -42,7 +42,6 @@ class ShellyData:
 
         try:
             self.data = Shelly(self.ip_address).update_data()
-            _LOGGER.debug('inner update completed')
         except ShellyException as error:
             _LOGGER.error(
                 "Unable to connect to Shelly: %s %s", error,

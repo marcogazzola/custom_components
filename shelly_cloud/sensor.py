@@ -49,8 +49,6 @@ def setup_platform(
 
     for ip_address, shelly_data in (
             hass.data[SHELLY_DOMAIN][CONF_DEVICES].items()):
-        print(ip_address)
-        shelly_data.update()
 
         if shelly_data is not None and shelly_data.data is not None:
             if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
@@ -61,16 +59,11 @@ def setup_platform(
                 if CONST_SENSOR_RELAY in shelly_data.monitored_conditions:
                     shelly_data.monitored_conditions.remove(CONST_SENSOR_RELAY)
 
-        _LOGGER.info(
-            'if you have ANY issues with this, please report them here:'
-            ' https://github.com/marcogazzola/custom_components')
-
-        _LOGGER.debug('Version %s', VERSION)
-
         sensors = []
         for variable in shelly_data.monitored_conditions:
             sensors.append(
                 ShellySensor(shelly_data, variable, shelly_data.name))
+            hass.data[SHELLY_DOMAIN]['sensor'].append(ip_address)
 
         add_entities(sensors, True)
 
@@ -160,7 +153,7 @@ class ShellySensor(Entity):
 
     def update(self):
         """Get the current Shelly status."""
-        self.shelly_data.update()
+        # self.shelly_data.update()
 
         if self.shelly_data is None or self.shelly_data.data is None:
             self._empty_state_and_attributes()

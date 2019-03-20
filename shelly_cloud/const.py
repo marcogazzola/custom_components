@@ -7,17 +7,18 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 
 from datetime import timedelta
 
-VERSION = '0.0.4b1'
+VERSION = '0.0.4b3'
 
 CONF_DOMAIN = 'domain'
 DOMAIN = "shelly_cloud"
 
 DEFAULT_NAME = 'Shelly'
 
-SCAN_INTERVAL = timedelta(minutes=2)
+SCAN_INTERVAL = timedelta(seconds=30)
+#SCAN_INTERVAL = timedelta(minutes=2)
 CONF_DEVICES = 'devices'
-MANAGED_COMPONENTS = ['sensor']
-# ['switch', 'sensor']
+MANAGED_COMPONENTS = ['sensor', 'cover']
+
 CONST_CONNECTED = 'Connected'
 CONST_DISCONNECTED = 'Disconnected'
 CONST_ENABLED = 'Enabled'
