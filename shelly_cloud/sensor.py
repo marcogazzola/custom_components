@@ -50,57 +50,59 @@ def setup_platform(
     for ip_address, shelly_data in (
             hass.data[SHELLY_DOMAIN][CONF_DEVICES].items()):
 
-        if shelly_data is not None and shelly_data.data is not None:
-            if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
-                if CONST_SENSOR_ROLLER in shelly_data.monitored_conditions:
-                    shelly_data.monitored_conditions.remove(
-                        CONST_SENSOR_ROLLER)
-            elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
-                if CONST_SENSOR_RELAY in shelly_data.monitored_conditions:
-                    shelly_data.monitored_conditions.remove(CONST_SENSOR_RELAY)
+        if ip_address not in hass.data[SHELLY_DOMAIN]['sensor']:
 
-        sensors = []
-        for variable in shelly_data.monitored_conditions:
-            sensors.append(
-                ShellySensor(shelly_data, variable, shelly_data.name))
-            hass.data[SHELLY_DOMAIN]['sensor'].append(ip_address)
+            if shelly_data is not None and shelly_data.data is not None:
+                if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
+                    if CONST_SENSOR_ROLLER in shelly_data.monitored_conditions:
+                        shelly_data.monitored_conditions.remove(
+                            CONST_SENSOR_ROLLER)
+                elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
+                    if CONST_SENSOR_RELAY in shelly_data.monitored_conditions:
+                        shelly_data.monitored_conditions.remove(CONST_SENSOR_RELAY)
 
-        add_entities(sensors, True)
+            sensors = []
+            for variable in shelly_data.monitored_conditions:
+                sensors.append(
+                    ShellySensor(shelly_data, variable, shelly_data.name))
+                hass.data[SHELLY_DOMAIN]['sensor'].append(ip_address)
 
-# def setup_platform(hass, config, add_entities, discovery_info=None):
-#     """Set up the Shelly sensor."""
+            add_entities(sensors, True)
 
-#     from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
+    # def setup_platform(hass, config, add_entities, discovery_info=None):
+    #     """Set up the Shelly sensor."""
 
-#     ip_address = config.get(CONF_IP_ADDRESS)
-#     name = config.get(CONF_NAME)
-#     username = config.get(CONF_USERNAME)
-#     password = config.get(CONF_PASSWORD)
-#     monitored_conditions = config.get(CONF_MONITORED_CONDITIONS)
-#     scan_interval = config.get(CONF_SCAN_INTERVAL)
-#     shelly_data = ShellyData(
-#         ip_address, username, password, name, scan_interval,
-#         monitored_conditions)
-#     shelly_data.update()
+    #     from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
-#     if shelly_data is not None and shelly_data.data is not None:
-#         if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
-#             if CONST_SENSOR_ROLLER in monitored_conditions:
-#                 monitored_conditions.remove(CONST_SENSOR_ROLLER)
-#         elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
-#             if CONST_SENSOR_RELAY in monitored_conditions:
-#                 monitored_conditions.remove(CONST_SENSOR_RELAY)
+    #     ip_address = config.get(CONF_IP_ADDRESS)
+    #     name = config.get(CONF_NAME)
+    #     username = config.get(CONF_USERNAME)
+    #     password = config.get(CONF_PASSWORD)
+    #     monitored_conditions = config.get(CONF_MONITORED_CONDITIONS)
+    #     scan_interval = config.get(CONF_SCAN_INTERVAL)
+    #     shelly_data = ShellyData(
+    #         ip_address, username, password, name, scan_interval,
+    #         monitored_conditions)
+    #     shelly_data.update()
 
-#     _LOGGER.info('if you have ANY issues with this, please report them here:'
-#                  ' https://github.com/marcogazzola/custom_components')
+    #     if shelly_data is not None and shelly_data.data is not None:
+    #         if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
+    #             if CONST_SENSOR_ROLLER in monitored_conditions:
+    #                 monitored_conditions.remove(CONST_SENSOR_ROLLER)
+    #         elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
+    #             if CONST_SENSOR_RELAY in monitored_conditions:
+    #                 monitored_conditions.remove(CONST_SENSOR_RELAY)
 
-#     _LOGGER.debug('Version %s', VERSION)
+    #     _LOGGER.info('if you have ANY issues with this, please report them here:'
+    #                  ' https://github.com/marcogazzola/custom_components')
 
-#     sensors = []
-#     for variable in monitored_conditions:
-#         sensors.append(ShellySensor(shelly_data, variable, name))
+    #     _LOGGER.debug('Version %s', VERSION)
 
-#     add_entities(sensors, True)
+    #     sensors = []
+    #     for variable in monitored_conditions:
+    #         sensors.append(ShellySensor(shelly_data, variable, name))
+
+    #     add_entities(sensors, True)
 
 
 class ShellySensor(Entity):
