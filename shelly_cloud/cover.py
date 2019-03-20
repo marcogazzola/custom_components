@@ -56,6 +56,10 @@ async def async_setup_platform(hass, config,
                 ("qos", 0),
                 ("position_open", 100),
                 ("position_closed", 0),
+                ("availability_topic", "shellies/{}/online".format(
+                    shelly_data.data.host_name)),
+                ("payload_available", "true"),
+                ("payload_not_available","false"),
                 ("platform", "mqtt")])
 
             cover.hass = hass

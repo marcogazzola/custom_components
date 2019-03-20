@@ -7,7 +7,7 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 
 from datetime import timedelta
 
-VERSION = '0.0.4b4'
+VERSION = '0.0.4b5'
 
 CONF_DOMAIN = 'domain'
 DOMAIN = "shelly_cloud"
