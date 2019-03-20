@@ -65,6 +65,6 @@ async def async_setup_platform(hass, config,
             hass.data[SHELLY_DOMAIN]['cover'].append(ip_address)
 
             hass.components.persistent_notification.async_create(
-                "Shelly Cloud cover created\nip address: {}".format(ip_address),
+                "Shelly Cloud cover created ip address: {}".format(ip_address),
                 "Shelly Cloud", "cover.{}".format(ip_address)
             )
