@@ -37,9 +37,9 @@ shelly_cloud:
 ```
 
 ***Configuration Variables***
-```
 Each **device** in **devices** may have the following settings:
 
+```
 ip_address
   (string)(Required)The IP address or hostname of the Shelly you want to track.
 
