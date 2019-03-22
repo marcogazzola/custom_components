@@ -12,7 +12,10 @@ from collections import OrderedDict
 from homeassistant.util import Throttle
 from homeassistant.components.mqtt import (cover)
 from .const import (
-    CONF_DEVICES, DOMAIN as SHELLY_DOMAIN, SCAN_INTERVAL)
+    CONF_DEVICES, DOMAIN as SHELLY_DOMAIN, SCAN_INTERVAL,
+    REQUIREMENTS_LIST)
+
+REQUIREMENTS = REQUIREMENTS_LIST
 
 DEPENDENCIES = ['mqtt', 'shelly_cloud']
 

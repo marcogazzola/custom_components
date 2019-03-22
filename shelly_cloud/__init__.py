@@ -10,22 +10,21 @@ import voluptuous as vol
 import ipaddress
 
 from homeassistant.helpers.event import async_track_time_interval
-from homeassistant.util.async_ import run_coroutine_threadsafe
 from homeassistant.helpers import discovery
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers import event
 from homeassistant.const import (
     CONF_SCAN_INTERVAL,
     CONF_USERNAME, CONF_PASSWORD, CONF_IP_ADDRESS,
     CONF_MONITORED_CONDITIONS, CONF_NAME)
 
 from .const import (
-    SCAN_INTERVAL, CONF_DEVICES, DOMAIN,
-    DEFAULT_NAME, SENSOR_TYPES, MANAGED_COMPONENTS, VERSION)
+    SCAN_INTERVAL, CONF_DEVICES, DOMAIN, REQUIREMENTS_LIST,
+    DEFAULT_NAME, SENSOR_TYPES, MANAGED_COMPONENTS, VERSION,
+    CONF_ENABLED_COMPONENTS)
 
 from .shelly_data import ShellyData
 
-REQUIREMENTS = ['shellypython>=0.0.4', 'uuid', 'websocket-client']
+REQUIREMENTS = REQUIREMENTS_LIST
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +41,8 @@ SHELLY_CONFIG_SCHEMA = vol.Schema({
 })
 
 vol.Schema({
+    vol.Optional(CONF_ENABLED_COMPONENTS, default=MANAGED_COMPONENTS):
+        vol.All(cv.ensure_list, [vol.In(MANAGED_COMPONENTS)]),
     DOMAIN: vol.Schema({
         vol.Optional(CONF_DEVICES):
             vol.All(cv.ensure_list, [SHELLY_CONFIG_SCHEMA]),
@@ -67,6 +68,7 @@ async def async_setup(hass, config, discovery_info=None):
     config = config.get(DOMAIN)
 
     async def setup_shelly(self):
+
         for shelly in config[CONF_DEVICES]:
             ip_address = shelly.get(CONF_IP_ADDRESS, '')
             username = shelly.get(CONF_USERNAME, '')
@@ -87,22 +89,14 @@ async def async_setup(hass, config, discovery_info=None):
             hass.data[DOMAIN][CONF_DEVICES][ip_address] = shelly_data
             _LOGGER.debug(hass.data[DOMAIN][CONF_DEVICES][ip_address])
 
-        for component in MANAGED_COMPONENTS:
+        managed_components = config.get(CONF_ENABLED_COMPONENTS, MANAGED_COMPONENTS)
+        for component in managed_components:
             discovery.load_platform(hass, component, DOMAIN, {}, config)
 
-    # def update_devices(event_time):
-    #     """Refresh"""
-    #     _LOGGER.debug("Updating devices status")
-
-    #     # @REMINDER figure it out how this works exactly
-    #     # and/or replace it with websocket
-    #     _LOGGER.debug("update_devices")
-    #     _LOGGER.debug(hass.data[DOMAIN][CONF_DEVICES][ip_address])
-    #     run_coroutine_threadsafe(
-    #         hass.data[DOMAIN][CONF_DEVICES][ip_address].async_update(hass),
-    #         hass.loop
-    #         )
+        return True
 
     async_track_time_interval(hass, setup_shelly, SCAN_INTERVAL)
+
+    await setup_shelly(None)
 
     return True
