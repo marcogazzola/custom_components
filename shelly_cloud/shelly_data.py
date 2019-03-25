@@ -16,7 +16,7 @@ class ShellyData:
 
     def __init__(
             self, ip_address, username, password, name,
-            scan_interval, monitored_conditions, hass = None):
+            scan_interval, monitored_conditions, hass=None):
         """Initialize the data object."""
         self.ip_address = ip_address
         self.username = username
@@ -41,7 +41,10 @@ class ShellyData:
         from shellypython.shelly import Shelly
 
         try:
-            self.data = Shelly(self.ip_address).update_data()
+            self.data = Shelly(
+                self.ip_address,
+                self.username,
+                self.password).update_data()
         except ShellyException as error:
             _LOGGER.error(
                 "Unable to connect to Shelly: %s %s", error,

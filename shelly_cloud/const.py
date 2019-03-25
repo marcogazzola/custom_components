@@ -7,13 +7,14 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 
 from datetime import timedelta
 
-VERSION = '0.1.0b0'
-REQUIREMENTS_LIST = ['shellypython>=0.0.4']
+VERSION = '0.1.1b0'
+REQUIREMENTS_LIST = ['shellypython>=0.1.1']
 CONF_DOMAIN = 'domain'
 DOMAIN = "shelly_cloud"
 
 DEFAULT_NAME = 'Shelly'
 
+# SCAN_INTERVAL = timedelta(seconds=30)
 SCAN_INTERVAL = timedelta(minutes=2)
 CONF_DEVICES = 'devices'
 CONF_ENABLED_COMPONENTS = 'enabled_components'

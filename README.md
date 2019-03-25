@@ -12,6 +12,7 @@ Allows for control the states of Shelly Cloud products as home assistant sensors
 * Sensor Cloud
 * Sensor Firmware
 * MQTT Cover
+* MQTT Switch
 
 # Configuration
 ### Download python files
@@ -23,6 +24,7 @@ custom_components
     const.py
     sensor.py
     cover.py
+    switch.py
     shelly_data.py
 ```
 ### Configure HA
@@ -32,16 +34,33 @@ Once there you’ll need to **update your config** to include the following plat
 
 ```yaml
 shelly_cloud:
+  enabled_components:
+    - sensor
+    - switch
+    - cover
   devices:
     - ip_address: !secret shelly_ip_address
 ```
 
+```
+enabled_components
+  (list)(Optional) Platorms to configure.
+  Available values: sensor, switch, cover
+  Default value: All keys
+```
+  
 ***Configuration Variables***
 Each **device** in **devices** may have the following settings:
 
 ```
 ip_address
   (string)(Required)The IP address or hostname of the Shelly you want to track.
+
+username
+  (string)(Optional)Username configurated in _RESTRICT LOGIN_ section of shelly.
+
+password
+  (string)(Optional)Password configurated in _RESTRICT LOGIN_ section of shelly.
 
 scan_interval
   (time)(Optional)Minimum time interval between updates. Supported formats: scan_interval: 'HH:MM:SS', scan_interval: 'HH:MM' and Time period dictionary (see example below).
@@ -70,8 +89,14 @@ monitored_conditions
 ***Example***
 ```yaml
 shelly_cloud:
+  enabled_components:
+    - sensor
+    - switch
+    - cover
   devices:
     - ip_address: !secret shelly_ip_address
+      username: !secret shelly_username
+      password: !secret shelly_password
       name: shelly
       scan_interval:
         - minutes: 2

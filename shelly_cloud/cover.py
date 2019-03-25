@@ -1,5 +1,5 @@
 """
-Create cover for every Shelly Cloud with MQTT enabled 
+Create cover for every Shelly Cloud with MQTT enabled
 and Working Mode = Roller Shutter.
 
 For more details about this platform, please refer to the documentation at
@@ -9,10 +9,9 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 import logging
 
 from collections import OrderedDict
-from homeassistant.util import Throttle
 from homeassistant.components.mqtt import (cover)
 from .const import (
-    CONF_DEVICES, DOMAIN as SHELLY_DOMAIN, SCAN_INTERVAL,
+    CONF_DEVICES, DOMAIN as SHELLY_DOMAIN,
     REQUIREMENTS_LIST)
 
 REQUIREMENTS = REQUIREMENTS_LIST
@@ -62,7 +61,7 @@ async def async_setup_platform(hass, config,
                 ("availability_topic", "shellies/{}/online".format(
                     shelly_data.data.host_name)),
                 ("payload_available", "true"),
-                ("payload_not_available","false"),
+                ("payload_not_available", "false"),
                 ("platform", "mqtt")])
 
             cover.hass = hass

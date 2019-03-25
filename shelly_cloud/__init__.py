@@ -89,8 +89,12 @@ async def async_setup(hass, config, discovery_info=None):
             hass.data[DOMAIN][CONF_DEVICES][ip_address] = shelly_data
             _LOGGER.debug(hass.data[DOMAIN][CONF_DEVICES][ip_address])
 
-        managed_components = config.get(CONF_ENABLED_COMPONENTS, MANAGED_COMPONENTS)
-        for component in managed_components:
+        _managed_components = config.get(
+            CONF_ENABLED_COMPONENTS,
+            MANAGED_COMPONENTS
+        )
+        print(_managed_components)
+        for component in _managed_components:
             discovery.load_platform(hass, component, DOMAIN, {}, config)
 
         return True
