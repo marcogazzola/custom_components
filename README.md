@@ -122,6 +122,20 @@ custom_updater:
     - https://raw.githubusercontent.com/marcogazzola/custom_components/master/custom_components.json
 ```
 
+## TIPS
+Add the following automation for force MQTT status refresh:
+``` yaml
+- alias: 'Shelly force status update'
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "shellies/command"
+          payload: "update"
+```
 
 # Changelog
 Complete changelog [here](https://github.com/marcogazzola/custom_components/blob/master/CHANGELOG.md).
