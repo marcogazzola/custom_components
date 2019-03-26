@@ -1,75 +1,54 @@
 """
-Get Shelly information for a given host through web api.
+Get Shelly Cloud information for a given host through web api.
 
 For more details about this platform, please refer to the documentation at
 https://github.com/marcogazzola/custom_components/blob/master/README.md
 """
 import logging
-import ipaddress
 
-import voluptuous as vol
+from homeassistant.helpers.entity import (Entity)
+from .const import (
+    REQUIREMENTS_LIST,
+    CONF_DEVICES, DOMAIN as SHELLY_DOMAIN,
+    CONST_SENSOR_ROLLER, CONST_SENSOR_RELAY,
+    SENSOR_ICONS, CONST_SENSOR_SYSTEM, CONST_SENSOR_MQTT,
+    CONST_SENSOR_CLOUD, CONST_SENSOR_WIFI, CONST_UPTODATE,
+    CONST_UPDATEAVAILABLE, CONST_SENSOR_FIRMWARE, CONST_DISCONNECTED,
+    CONST_CONNECTED)
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    CONF_NAME, CONF_IP_ADDRESS,
-    CONF_USERNAME, CONF_PASSWORD,
-    CONF_MONITORED_CONDITIONS, CONF_SCAN_INTERVAL
-    )
-import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import (Entity, generate_entity_id)
-from homeassistant.util import Throttle
-from .const import *
-
-REQUIREMENTS = ['shellypython>=0.0.4']
+REQUIREMENTS = [REQUIREMENTS_LIST]
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_IP_ADDRESS):
-        vol.All(ipaddress.ip_address, cv.string),
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_USERNAME): cv.string,
-    vol.Optional(CONF_PASSWORD): cv.string,
-    vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
-            cv.time_period,
-    vol.Optional(CONF_MONITORED_CONDITIONS, default=SENSOR_TYPES):
-        vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
-    })
 
-
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Set up the Shelly sensor."""
+def setup_platform(
+        hass, config, add_entities, discovery_info=None):
+    """Add the Shelly Cloud Sensor entities"""
 
     from shellypython.const import (WORKING_MODE_RELAY, WORKING_MODE_ROLLER)
 
-    ip_address = config.get(CONF_IP_ADDRESS)
-    name = config.get(CONF_NAME)
-    username = config.get(CONF_USERNAME)
-    password = config.get(CONF_PASSWORD)
-    monitored_condition = config.get(CONF_MONITORED_CONDITIONS)
-    scan_interval = config.get(CONF_SCAN_INTERVAL)
-    shelly_data = ShellyData(
-        ip_address, username, password, scan_interval, add_entities)
-    shelly_data.update()
+    for ip_address, shelly_data in (
+            hass.data[SHELLY_DOMAIN][CONF_DEVICES].items()):
 
-    if shelly_data is not None and shelly_data.data is not None:
-        if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
-            if CONST_SENSOR_ROLLER in monitored_condition:
-                monitored_condition.remove(CONST_SENSOR_ROLLER)
-        elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
-            if CONST_SENSOR_RELAY in monitored_condition:
-                monitored_condition.remove(CONST_SENSOR_RELAY)
+        if ip_address not in hass.data[SHELLY_DOMAIN]['sensor']:
 
-    _LOGGER.info('if you have ANY issues with this, please report them here:'
-                 ' https://github.com/marcogazzola/custom_components')
+            if shelly_data is not None and shelly_data.data is not None:
+                if shelly_data.data.working_mode_raw == WORKING_MODE_RELAY:
+                    if CONST_SENSOR_ROLLER in shelly_data.monitored_conditions:
+                        shelly_data.monitored_conditions.remove(
+                            CONST_SENSOR_ROLLER)
+                elif shelly_data.data.working_mode_raw == WORKING_MODE_ROLLER:
+                    if CONST_SENSOR_RELAY in shelly_data.monitored_conditions:
+                        shelly_data.monitored_conditions.remove(
+                            CONST_SENSOR_RELAY)
 
-    _LOGGER.debug('Version %s', VERSION)
+            sensors = []
+            for variable in shelly_data.monitored_conditions:
+                sensors.append(
+                    ShellySensor(shelly_data, variable, shelly_data.name))
+                hass.data[SHELLY_DOMAIN]['sensor'].append(ip_address)
 
-    sensors = []
-    for variable in monitored_condition:
-        sensors.append(ShellySensor(shelly_data, variable, name))
-
-    add_entities(sensors, True)
+            add_entities(sensors, True)
 
 
 class ShellySensor(Entity):
@@ -122,7 +101,7 @@ class ShellySensor(Entity):
 
     def update(self):
         """Get the current Shelly status."""
-        self.shelly_data.update()
+        # self.shelly_data.update()
 
         if self.shelly_data is None or self.shelly_data.data is None:
             self._empty_state_and_attributes()
@@ -211,32 +190,3 @@ class ShellySensor(Entity):
                     "Current version": attributes_data.old_version,
                     "Latest version": attributes_data.new_version,
                     }
-
-class ShellyData:
-    """Get the latest data from ShellyData."""
-
-    def __init__(
-            self, ip_address, username, password, scan_interval, add_entities):
-        """Initialize the data object."""
-        self._ip_address = ip_address
-        self._username = username
-        self._password = password
-
-        self.data = None
-
-        # Apply throttling to methods using configured interval
-        self.update = Throttle(scan_interval)(self._update)
-
-    def _update(self):
-        """Get the latest data from Shelly Api."""
-        from shellypython.exception import ShellyException
-        from shellypython.shelly import Shelly
-
-        try:
-            self.data = Shelly(self._ip_address).update_data()
-        except ShellyException as error:
-            _LOGGER.error(
-                "Unable to connect to Shelly: %s %s", error,
-                self._ip_address
-                )
-            self.data = None

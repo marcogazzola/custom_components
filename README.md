@@ -1,7 +1,7 @@
 [Shelly Cloud Custom Component](https://github.com/marcogazzola/custom_components) for homeassistant
 
 # What this is:
-This is a custom component to allow control of Shelly Cloud devices in [Homeassistant](https://home-assistant.io) using the unofficial Shelly API. Please note Shelly may cut off access at anytime.
+This is a custom component to allow control of Shelly Cloud devices in [Homeassistant](https://home-assistant.io) using the official Shelly API in local network. Please note Shelly may cut off access or change the structure at anytime.
 
 # What it does:
 Allows for control the states of Shelly Cloud products as home assistant sensors with the following features:
@@ -11,6 +11,8 @@ Allows for control the states of Shelly Cloud products as home assistant sensors
 * Sensor Mqtt
 * Sensor Cloud
 * Sensor Firmware
+* MQTT Cover
+* MQTT Switch
 
 # Configuration
 ### Download python files
@@ -21,20 +23,44 @@ custom_components
     __init__.py
     const.py
     sensor.py
+    cover.py
+    switch.py
+    shelly_data.py
 ```
 ### Configure HA
-Once there you’ll need to **update your config** to include the following under the **sensor domain**:
+Once there you’ll need to **update your config** to include the following platform in **configuration.yaml**:
+
+##### MQTT Cover will be created automatically only if shelly works in Roller Shutter mode and it is connetted via MQTT
 
 ```yaml
-sensor:
-  - platform: shelly_cloud
-    ip_address: !secret shelly_ip_address
+shelly_cloud:
+  enabled_components:
+    - sensor
+    - switch
+    - cover
+  devices:
+    - ip_address: !secret shelly_ip_address
 ```
 
+```
+enabled_components
+  (list)(Optional) Platorms to configure.
+  Available values: sensor, switch, cover
+  Default value: All keys
+```
+  
 ***Configuration Variables***
+Each **device** in **devices** may have the following settings:
+
 ```
 ip_address
   (string)(Required)The IP address or hostname of the Shelly you want to track.
+
+username
+  (string)(Optional)Username configurated in _RESTRICT LOGIN_ section of shelly.
+
+password
+  (string)(Optional)Password configurated in _RESTRICT LOGIN_ section of shelly.
 
 scan_interval
   (time)(Optional)Minimum time interval between updates. Supported formats: scan_interval: 'HH:MM:SS', scan_interval: 'HH:MM' and Time period dictionary (see example below).
@@ -62,18 +88,24 @@ monitored_conditions
 
 ***Example***
 ```yaml
-sensor:
-  - platform: shelly_cloud
-    ip_address: !secret shelly_ip_address
-    name: shelly
-    scan_interval:
-      - minutes: 2
-    monitored_conditions:
-      - SYSTEM
-      - WIFI
-      - MQTT
-      - CLOUD
-      - FIRMWARE
+shelly_cloud:
+  enabled_components:
+    - sensor
+    - switch
+    - cover
+  devices:
+    - ip_address: !secret shelly_ip_address
+      username: !secret shelly_username
+      password: !secret shelly_password
+      name: shelly
+      scan_interval:
+        - minutes: 2
+      monitored_conditions:
+        - SYSTEM
+        - WIFI
+        - MQTT
+        - CLOUD
+        - FIRMWARE
 ```
 
 ### Configure [custom_updater](https://github.com/custom-components/custom_updater) component
