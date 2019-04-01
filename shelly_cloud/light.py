@@ -1,5 +1,5 @@
 """
-Create switch for every Shelly Cloud with MQTT enabled
+Create light for every Shelly Cloud with MQTT enabled
 and Working Mode = Relay.
 
 For more details about this platform, please refer to the documentation at
@@ -9,7 +9,8 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 import logging
 
 from collections import OrderedDict
-from homeassistant.components.mqtt import (switch)
+from homeassistant.components.mqtt import (light)
+from homeassistant.components.mqtt.light import (CONF_SCHEMA)
 from .const import (
     CONF_DEVICES, DOMAIN as SHELLY_DOMAIN, PLATFORM_STARTUP)
 
@@ -20,21 +21,22 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_platform(hass, config,
                                async_add_entities, discovery_info=None):
-    """Setup switch platform"""
-    _LOGGER.debug("init setup mqtt switch")
+    """Setup light platform"""
+    _LOGGER.debug("init setup mqtt light")
 
     from shellypython.const import (WORKING_MODE_RELAY)
 
     for ip_address, shelly_data in (
             hass.data[SHELLY_DOMAIN][CONF_DEVICES].items()):
 
-        if (ip_address not in hass.data[SHELLY_DOMAIN]['switch']
+        if (ip_address not in hass.data[SHELLY_DOMAIN]['light']
                 and shelly_data.data is not None
                 and shelly_data.data.working_mode_raw == WORKING_MODE_RELAY
                 and shelly_data.data.mqtt is not None
                 and shelly_data.data.mqtt.connected
                 and shelly_data.data.relays is not None
-                and shelly_data.relay_type == 'switch'):
+                and shelly_data.relay_type == 'light'):
+
             for index, relay in enumerate(shelly_data.data.relays):
                 _name = (
                     "{}_{}".format(shelly_data.name, index)
@@ -55,20 +57,21 @@ async def async_setup_platform(hass, config,
                         shelly_data.data.host_name)),
                     ("payload_available", "true"),
                     ("payload_not_available",   "false"),
-                    ("platform", "mqtt")])
+                    ("platform", "mqtt"),
+                    ("schema", "basic")])
 
-                switch.hass = hass
-                await switch.async_setup_platform(
+                light.hass = hass
+                await light.async_setup_platform(
                     hass, config, async_add_entities, discovery_info)
 
-                hass.data[SHELLY_DOMAIN]['switch'].append(ip_address)
+                hass.data[SHELLY_DOMAIN]['light'].append(ip_address)
 
-                if not hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP]['switch']:
+                if not hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP]['light']:
                     hass.components.persistent_notification.async_create(
-                        "Shelly Cloud switch created ip address: {}".format(
+                        "Shelly Cloud light created ip address: {}".format(
                             ip_address),
-                        "Shelly Cloud", "switch.{}.{}".format(
+                        "Shelly Cloud", "light.{}.{}".format(
                             ip_address, index)
                     )
                 hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP].update(
-                    {'switch': False})
+                    {'light': False})

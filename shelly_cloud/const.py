@@ -7,19 +7,21 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 
 from datetime import timedelta
 
-VERSION = '0.1.1b0'
+VERSION = '0.1.2b1'
 REQUIREMENTS_LIST = ['shellypython>=0.1.1']
 CONF_DOMAIN = 'domain'
 DOMAIN = "shelly_cloud"
 
 DEFAULT_NAME = 'Shelly'
 
-# SCAN_INTERVAL = timedelta(seconds=30)
-SCAN_INTERVAL = timedelta(minutes=2)
+SENSOR_SCAN_INTERVAL = timedelta(seconds=10)
+PLATFORM_SCAN_INTERVAL = timedelta(minutes=5)
 CONF_DEVICES = 'devices'
+CONF_RELAY_TYPE = 'relay_type'
 CONF_ENABLED_COMPONENTS = 'enabled_components'
-MANAGED_COMPONENTS = ['sensor', 'cover', 'switch']
-
+MANAGED_COMPONENTS = ['sensor', 'cover', 'switch', 'light']
+RELAY_TYPES = ['switch', 'light']
+PLATFORM_STARTUP = 'startup'
 CONST_CONNECTED = 'Connected'
 CONST_DISCONNECTED = 'Disconnected'
 CONST_ENABLED = 'Enabled'

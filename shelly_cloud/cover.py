@@ -12,7 +12,7 @@ from collections import OrderedDict
 from homeassistant.components.mqtt import (cover)
 from .const import (
     CONF_DEVICES, DOMAIN as SHELLY_DOMAIN,
-    REQUIREMENTS_LIST)
+    REQUIREMENTS_LIST, PLATFORM_STARTUP)
 
 REQUIREMENTS = REQUIREMENTS_LIST
 
@@ -70,7 +70,10 @@ async def async_setup_platform(hass, config,
 
             hass.data[SHELLY_DOMAIN]['cover'].append(ip_address)
 
-            hass.components.persistent_notification.async_create(
-                "Shelly Cloud cover created ip address: {}".format(ip_address),
-                "Shelly Cloud", "cover.{}".format(ip_address)
-            )
+            if not hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP]['cover']:
+                hass.components.persistent_notification.async_create(
+                    "Shelly Cloud cover created ip address: {}".format(
+                        ip_address),
+                    "Shelly Cloud", "cover.{}".format(ip_address)
+                )
+            hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP].update({'cover': False})

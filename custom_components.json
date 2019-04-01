@@ -1,6 +1,6 @@
 {
     "shelly_cloud": {
-        "version": "0.1.1b0",
+        "version": "0.1.2b0",
         "local_location": "/custom_components/shelly_cloud/__init__.py",
         "remote_location": "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/__init__.py",
         "visit_repo": "https://github.com/marcogazzola/custom_components",
@@ -10,6 +10,7 @@
             "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/sensor.py",
             "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/switch.py",
             "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/cover.py",
+            "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/light.py",
             "https://raw.githubusercontent.com/marcogazzola/custom_components/dev/shelly_cloud/shelly_data.py"
         ]
     }

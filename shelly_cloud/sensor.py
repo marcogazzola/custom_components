@@ -14,7 +14,7 @@ from .const import (
     SENSOR_ICONS, CONST_SENSOR_SYSTEM, CONST_SENSOR_MQTT,
     CONST_SENSOR_CLOUD, CONST_SENSOR_WIFI, CONST_UPTODATE,
     CONST_UPDATEAVAILABLE, CONST_SENSOR_FIRMWARE, CONST_DISCONNECTED,
-    CONST_CONNECTED)
+    CONST_CONNECTED, PLATFORM_STARTUP)
 
 REQUIREMENTS = [REQUIREMENTS_LIST]
 
@@ -45,16 +45,21 @@ def setup_platform(
             sensors = []
             for variable in shelly_data.monitored_conditions:
                 sensors.append(
-                    ShellySensor(shelly_data, variable, shelly_data.name))
+                    ShellySensor(
+                        shelly_data, variable,
+                        shelly_data.name, ip_address))
                 hass.data[SHELLY_DOMAIN]['sensor'].append(ip_address)
 
-            add_entities(sensors, True)
+            if len(sensors):
+                add_entities(sensors, True)
+            hass.data[SHELLY_DOMAIN][PLATFORM_STARTUP].update(
+                {'sensor': False})
 
 
 class ShellySensor(Entity):
     """Implementation of Shelly sensor."""
 
-    def __init__(self, shelly_data, sensor_type, name):
+    def __init__(self, shelly_data, sensor_type, name, ip_address):
         """Initialize the sensor."""
         self.client_name = name
         self._name = sensor_type
@@ -63,6 +68,7 @@ class ShellySensor(Entity):
         self._state = None
         self._unit_of_measurement = None
         self._attributes = None
+        self.ip_address = ip_address
 
     @property
     def name(self):
@@ -101,7 +107,10 @@ class ShellySensor(Entity):
 
     def update(self):
         """Get the current Shelly status."""
-        # self.shelly_data.update()
+        self.shelly_data.update()
+
+        self.shelly_data = (
+            self.hass.data[SHELLY_DOMAIN][CONF_DEVICES][self.ip_address])
 
         if self.shelly_data is None or self.shelly_data.data is None:
             self._empty_state_and_attributes()

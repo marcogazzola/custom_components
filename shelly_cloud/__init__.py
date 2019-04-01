@@ -7,8 +7,10 @@ https://github.com/marcogazzola/custom_components/blob/master/README.md
 
 import logging
 import voluptuous as vol
+import asyncio
 import ipaddress
-
+import gc
+from homeassistant.util.async_ import run_coroutine_threadsafe
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers import discovery
 from homeassistant.helpers import config_validation as cv
@@ -18,9 +20,10 @@ from homeassistant.const import (
     CONF_MONITORED_CONDITIONS, CONF_NAME)
 
 from .const import (
-    SCAN_INTERVAL, CONF_DEVICES, DOMAIN, REQUIREMENTS_LIST,
+    SENSOR_SCAN_INTERVAL, CONF_DEVICES, DOMAIN, REQUIREMENTS_LIST,
     DEFAULT_NAME, SENSOR_TYPES, MANAGED_COMPONENTS, VERSION,
-    CONF_ENABLED_COMPONENTS)
+    CONF_ENABLED_COMPONENTS, PLATFORM_STARTUP, PLATFORM_SCAN_INTERVAL,
+    RELAY_TYPES, CONF_RELAY_TYPE)
 
 from .shelly_data import ShellyData
 
@@ -34,10 +37,12 @@ SHELLY_CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_USERNAME): cv.string,
     vol.Optional(CONF_PASSWORD): cv.string,
-    vol.Optional(CONF_SCAN_INTERVAL, default=SCAN_INTERVAL):
+    vol.Optional(CONF_SCAN_INTERVAL, default=SENSOR_SCAN_INTERVAL):
         cv.time_period,
     vol.Optional(CONF_MONITORED_CONDITIONS, default=SENSOR_TYPES):
         vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
+    vol.Optional(CONF_RELAY_TYPE, default='switch'):
+        vol.All(cv.string, [vol.In(RELAY_TYPES)]),
 })
 
 vol.Schema({
@@ -61,46 +66,58 @@ async def async_setup(hass, config, discovery_info=None):
 
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN][CONF_DEVICES] = {}
+    hass.data[DOMAIN][PLATFORM_STARTUP] = {}
     for item in MANAGED_COMPONENTS:
         hass.data[DOMAIN][item] = []
+        hass.data[DOMAIN][PLATFORM_STARTUP].update({item: True})
 
-    hass.data[DOMAIN][CONF_DEVICES]
     config = config.get(DOMAIN)
 
     async def setup_shelly(self):
-
+        tasks = []
         for shelly in config[CONF_DEVICES]:
             ip_address = shelly.get(CONF_IP_ADDRESS, '')
             username = shelly.get(CONF_USERNAME, '')
             password = shelly.get(CONF_PASSWORD, '')
             name = shelly.get(CONF_NAME, DEFAULT_NAME)
-            _LOGGER.debug(name)
+
             monitored_condition = shelly.get(
                 CONF_MONITORED_CONDITIONS, SENSOR_TYPES)
-            _LOGGER.debug(monitored_condition)
-            scan_interval = shelly.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
-            _LOGGER.debug(ip_address)
+
+            scan_interval = shelly.get(
+                CONF_SCAN_INTERVAL, SENSOR_SCAN_INTERVAL)
+
+            relay_type = shelly.get(CONF_RELAY_TYPE)
+
             shelly_data = ShellyData(
                 ip_address, username, password,
-                name, scan_interval, monitored_condition, hass)
+                name, scan_interval, monitored_condition,
+                relay_type, hass)
 
-            await shelly_data.async_update(hass)
-
+            # await shelly_data.async_update(hass)
             hass.data[DOMAIN][CONF_DEVICES][ip_address] = shelly_data
-            _LOGGER.debug(hass.data[DOMAIN][CONF_DEVICES][ip_address])
+            tasks.append(
+                hass.data[DOMAIN][CONF_DEVICES][ip_address].async_update(hass)
+                )
+
+        await asyncio.wait(tasks)
+        del tasks
+        gc.collect()
 
         _managed_components = config.get(
             CONF_ENABLED_COMPONENTS,
             MANAGED_COMPONENTS
         )
-        print(_managed_components)
+
         for component in _managed_components:
             discovery.load_platform(hass, component, DOMAIN, {}, config)
 
+        gc.collect()
+
         return True
 
-    async_track_time_interval(hass, setup_shelly, SCAN_INTERVAL)
+    run_coroutine_threadsafe(setup_shelly(None), hass.loop)
 
-    await setup_shelly(None)
+    async_track_time_interval(hass, setup_shelly, PLATFORM_SCAN_INTERVAL)
 
     return True
